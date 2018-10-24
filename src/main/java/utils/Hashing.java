@@ -7,7 +7,31 @@ import org.bouncycastle.util.encoders.Hex;
 
 public final class Hashing {
 
-  // TODO: You should add a salt and make this secure
+
+
+  // TODO: You should add a salt and make this secure       :FIX
+
+  //Salt attribut der benyttes til at sikre hashing ekstra udover brugeres password
+  public String salt = "sutden123";
+
+  /**
+   * Hashing med salt metoder, der tager @param password og sætter den sammen med salt værdien som
+   * String hashedPassword. Hvorefter det bliver hashed gennem md5-metoden og tilsidst retunere den hashed
+   * værdi af hashedPassword
+   * @param password
+   * @return hashedPassword
+   */
+  public String hashWithSaltMd5(String password){
+
+    //Opretter ny parameter af password, sammensat af salt og password
+    String hashedPassword = this.salt + password;
+    //Hasher den sammensatte password gennem md5 metoden
+    hashedPassword = md5(hashedPassword);
+
+    //Returnere den hashed kode
+    return hashedPassword;
+  }
+
   public static String md5(String rawString) {
     try {
 
@@ -37,7 +61,25 @@ public final class Hashing {
     return null;
   }
 
-  // TODO: You should add a salt and make this secure
+  // TODO: You should add a salt and make this secure         :FIX
+  /**
+   * Hashing med salt metoder, der tager @param password og sætter den sammen med salt værdien som
+   * String hashedPassword. Hvorefter det bliver hashed gennem sha-metoden og tilsidst retunere den hashed
+   * værdi af hashedPassword
+   * @param password
+   * @return hashedPassword
+   */
+  public String hashWithSaltSha(String password){
+
+    //Opretter ny parameter af password, sammensat af salt og password
+    String hashedPassword = this.salt + password;
+    //Hasher den sammensatte password gennem md5 metoden
+    hashedPassword = md5(hashedPassword);
+
+    //Returnere den hashed kode
+    return hashedPassword;
+  }
+
   public static String sha(String rawString) {
     try {
       // We load the hashing algoritm we wish to use.
