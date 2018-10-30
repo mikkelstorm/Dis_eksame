@@ -85,7 +85,7 @@ public final class Hashing {
     return hashedPassword;
   }
 
-  public static String sha(String rawString) {
+  public String sha(String rawString) {
     try {
       // We load the hashing algoritm we wish to use.
       MessageDigest digest = MessageDigest.getInstance("SHA-256");

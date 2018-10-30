@@ -9,6 +9,9 @@ public class User {
   private String password;
   private long createdTime;
 
+  //Attribut Token
+  private String token;
+
   public User(int id, String firstname, String lastname, String password, String email) {
     this.id = id;
     this.firstname = firstname;
@@ -16,6 +19,16 @@ public class User {
     this.password = password;
     this.email = email;
   }
+
+  //Konstruktør med token
+  public User(int id, String password, String email, String token) {
+    this.id = id;
+    this.password = password;
+    this.email = email;
+    this.token = token;
+  }
+
+
 
   public int getId() {
     return id;
@@ -63,5 +76,14 @@ public class User {
 
   public void setCreatedTime(long createdTime) {
     this.createdTime = createdTime;
+  }
+
+  //SETTER og GETTER for token
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
   }
 }

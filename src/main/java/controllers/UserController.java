@@ -135,23 +135,27 @@ public class UserController {
     return user;
   }
 
+
+  //Selv lavet metode
   public static User loginUser(User user){
 
-    // Write in log that we've reach this step
+
+    // Skriver i log at vi er noget til dette step
     Log.writeLog(UserController.class.getName(), user, "Login as an user", 0);
 
-    // Check for DB Connection
+    // Tjekker om der er forbindelse til databasen
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    String sql = "SELECT * FROM user WHERE first_name=\'" + user.getFirstname() + "\' AND password=\'" + user.getPassword() + "\'";
+    String sql = "SELECT * FROM user WHERE first_name=\'" + user.getEmail() + "\' AND password=\'" + user.getPassword() + "\'";
 
-      // Do the query and initialyze an empty list for use if we don't get results
+      //Kører en query med sql statement over brugernavn og kode. Returnere en tom liste, hvis der ikke findes
+      //en bruger med samme brugernavn og kode i databasen
       ResultSet rs = dbCon.query(sql);
 
     try {
-      // Get first object, since we only have one
+      // tager kun en user, da der ikke er flere brugere med samme brugernavn og kode
       if (rs.next()) {
         user =
                 new User(
@@ -161,7 +165,7 @@ public class UserController {
                         rs.getString("password"),
                         rs.getString("email"));
 
-        // return the create object
+        // returnere fundet bruger
         return user;
       } else {
         System.out.println("Wrong email or password");
@@ -169,6 +173,8 @@ public class UserController {
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
     }
+
+    //Returnere null user, hvis der ikke er fundet en bruger med pågældende brugernavn og kode
     return user;
   }
 

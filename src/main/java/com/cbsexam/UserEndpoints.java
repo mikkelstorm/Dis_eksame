@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import model.User;
 import utils.Encryption;
+import utils.Hashing;
 import utils.Log;
 
 @Path("user")
@@ -101,6 +102,9 @@ public class UserEndpoints {
 
     // loginUser returnere en token
     User userToken = UserController.loginUser(loginUser);
+
+    userToken.setToken(new Hashing().sha("TestShaToken")
+                      + "." + new Hashing().sha(Integer.toString(userToken.getId())));
 
     String json = new Gson().toJson(userToken);
 
