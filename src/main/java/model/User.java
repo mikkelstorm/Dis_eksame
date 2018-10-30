@@ -21,9 +21,7 @@ public class User {
   }
 
   //Konstruktør med token
-  public User(int id, String password, String email, String token) {
-    this.id = id;
-    this.password = password;
+  public User(String email, String token) {
     this.email = email;
     this.token = token;
   }

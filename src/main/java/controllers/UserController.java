@@ -148,7 +148,8 @@ public class UserController {
       dbCon = new DatabaseController();
     }
 
-    String sql = "SELECT * FROM user WHERE first_name=\'" + user.getEmail() + "\' AND password=\'" + user.getPassword() + "\'";
+    //SQL statement
+    String sql = "SELECT * FROM user WHERE email=\'" + user.getEmail() + "\' AND password=\'" + user.getPassword() + "\'";
 
       //Kører en query med sql statement over brugernavn og kode. Returnere en tom liste, hvis der ikke findes
       //en bruger med samme brugernavn og kode i databasen
@@ -165,6 +166,10 @@ public class UserController {
                         rs.getString("password"),
                         rs.getString("email"));
 
+        //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
+        user.setToken(new Hashing().sha("TestShaToken")
+                + "." + new Hashing().sha(Integer.toString(user.getId())));
+
         // returnere fundet bruger
         return user;
       } else {
@@ -178,6 +183,60 @@ public class UserController {
     return user;
   }
 
+
+  public static User deleteUser(User user){
+
+    // Skriver i log at vi er noget til dette step
+    Log.writeLog(UserController.class.getName(), user, "Deleting an User", 0);
+
+    // Tjekker om der er forbindelse til databasen
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+
+    //SQL statement
+    String sql = "SELECT * FROM user WHERE email=\'" + user.getEmail() + "\'";
+    String token = user.getToken();
+
+    ResultSet rs = dbCon.query(sql);
+
+    try {
+      // tager kun en user, da der ikke er flere brugere med samme brugernavn og kode
+      if (rs.next()) {
+        user =
+                new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"));
+
+        //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
+        user.setToken(new Hashing().sha("TestShaToken")
+                + "." + new Hashing().sha(Integer.toString(user.getId())));
+
+        // returnere fundet bruger
+
+      } else {
+        System.out.println("Something went wrong");
+      }
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+    }
+
+    if(token.equals(user.getToken())){
+      System.out.println("Det virker\n userToken" + user.getToken() + "\n tokenBody" + token);
+      String deleteSQL = "DELETE FROM user WHERE email= \'" + user.getEmail() + "\'";
+      dbCon.insert(deleteSQL);
+
+      return user;
+
+    }else{
+      System.out.println("Du fucked op");
+      return null;
+    }
+
+  }
 
 
 }

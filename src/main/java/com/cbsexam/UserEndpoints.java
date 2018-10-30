@@ -91,7 +91,7 @@ public class UserEndpoints {
     }
   }
 
-  // TODO: Make the system able to login users and assign them a token to use throughout the system.
+  // TODO: Make the system able to login users and assign them a token to use throughout the system.    :FIX
   @POST
   @Path("/login")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -103,13 +103,14 @@ public class UserEndpoints {
     // loginUser returnere en token
     User userToken = UserController.loginUser(loginUser);
 
+    //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
     userToken.setToken(new Hashing().sha("TestShaToken")
                       + "." + new Hashing().sha(Integer.toString(userToken.getId())));
 
     String json = new Gson().toJson(userToken);
 
 
-// Return the data to the user
+  // Return the data to the user
     if (userToken != null) {
       // Return a response with status 200 and JSON as type
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
@@ -126,10 +127,29 @@ public class UserEndpoints {
 
 
   // TODO: Make the system able to delete users
-  public Response deleteUser(String x) {
+  @POST
+  @Path("/delete")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response deleteUser(String body) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+    // læser json body og laver det om til en ny User/bruger
+    User chosenUser = new Gson().fromJson(body, User.class);
+
+    // loginUser returnere en token
+    User deleteUser = UserController.deleteUser(chosenUser);
+
+
+    String json = new Gson().toJson(deleteUser);
+
+
+    // Return the data to the user
+    if (deleteUser != null) {
+      // Return a response with status 200 and JSON as type
+      return Response.status(200).entity("Du slettede brugeren: " + deleteUser.getEmail()).build();
+    } else {
+      return Response.status(400).entity("Something went wrong").build();
+    }
+
   }
 
   // TODO: Make the system able to update users
