@@ -134,4 +134,44 @@ public class UserController {
     // Return user
     return user;
   }
+
+  public static User loginUser(User user){
+
+    // Write in log that we've reach this step
+    Log.writeLog(UserController.class.getName(), user, "Login as an user", 0);
+
+    // Check for DB Connection
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+
+    String sql = "SELECT * FROM user WHERE first_name=\'" + user.getFirstname() + "\' AND password=\'" + user.getPassword() + "\'";
+
+      // Do the query and initialyze an empty list for use if we don't get results
+      ResultSet rs = dbCon.query(sql);
+
+    try {
+      // Get first object, since we only have one
+      if (rs.next()) {
+        user =
+                new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"));
+
+        // return the create object
+        return user;
+      } else {
+        System.out.println("Wrong email or password");
+      }
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+    }
+    return user;
+  }
+
+
+
 }

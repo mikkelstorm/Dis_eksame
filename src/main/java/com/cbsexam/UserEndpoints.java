@@ -34,9 +34,16 @@ public class UserEndpoints {
     // TODO: Add Encryption to JSON         :FIX check turn on/off
 //    json = Encryption.encryptDecryptXOR(json);
 
-    // Return the user with the status code 200
-    // TODO: What should happen if something breaks down?
-    return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+
+    // TODO: What should happen if something breaks down?     :FIX
+    // Returnere data til brugeren, der enten er bruger data eller tekst der siger brugeren ikke kunne findes
+    if (user != null) {
+      //Returnere et svar med status kode 200 for "OK" og 400 for client error ved request
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    } else {
+      return Response.status(400).entity("Could not find user").build();
+    }
+
   }
 
   /** @return Responses */
@@ -87,11 +94,32 @@ public class UserEndpoints {
   @POST
   @Path("/login")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response loginUser(String x) {
+  public Response loginUser(String body) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+    // læser json body og laver det om til en ny User/bruger
+    User loginUser = new Gson().fromJson(body, User.class);
+
+    // loginUser returnere en token
+    User userToken = UserController.loginUser(loginUser);
+
+    String json = new Gson().toJson(userToken);
+
+
+// Return the data to the user
+    if (userToken != null) {
+      // Return a response with status 200 and JSON as type
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    } else {
+      return Response.status(400).entity("Wrong username or password").build();
+    }
   }
+
+
+
+
+
+
+
 
   // TODO: Make the system able to delete users
   public Response deleteUser(String x) {
