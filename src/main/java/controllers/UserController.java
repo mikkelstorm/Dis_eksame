@@ -156,7 +156,7 @@ public class UserController {
       ResultSet rs = dbCon.query(sql);
 
     try {
-      // tager kun en user, da der ikke er flere brugere med samme brugernavn og kode
+      // tager kun en user, da der ikke er flere brugere med samme email og kode
       if (rs.next()) {
         user =
                 new User(
@@ -186,7 +186,7 @@ public class UserController {
 
   public static User deleteUser(User user){
 
-    // Skriver i log at vi er noget til dette step
+    // Skriver i log at vi er nået til dette step
     Log.writeLog(UserController.class.getName(), user, "Deleting an User", 0);
 
     // Tjekker om der er forbindelse til databasen
@@ -201,7 +201,7 @@ public class UserController {
     ResultSet rs = dbCon.query(sql);
 
     try {
-      // tager kun en user, da der ikke er flere brugere med samme brugernavn og kode
+      // tager kun en user, da der ikke er flere brugere med samme email
       if (rs.next()) {
         user =
                 new User(
@@ -215,8 +215,6 @@ public class UserController {
         user.setToken(new Hashing().sha("TestShaToken")
                 + "." + new Hashing().sha(Integer.toString(user.getId())));
 
-        // returnere fundet bruger
-
       } else {
         System.out.println("Something went wrong");
       }
@@ -224,6 +222,8 @@ public class UserController {
       System.out.println(ex.getMessage());
     }
 
+    //validere token mellem brugerens token skabt at databasen og token fra body i post request
+    //Hvis valid, slettes brugeren
     if(token.equals(user.getToken())){
       System.out.println("Det virker\n userToken" + user.getToken() + "\n tokenBody" + token);
       String deleteSQL = "DELETE FROM user WHERE email= \'" + user.getEmail() + "\'";
@@ -235,7 +235,6 @@ public class UserController {
       System.out.println("Du fucked op");
       return null;
     }
-
   }
 
 
@@ -257,7 +256,7 @@ public class UserController {
     User tempUser = user;
 
     try {
-      // tager kun en user, da der ikke er flere brugere med samme brugernavn og kode
+      // tager kun en user, da der ikke er flere brugere med samme id
       if (rs.next()) {
         tempUser =
                 new User(
@@ -278,7 +277,8 @@ public class UserController {
       System.out.println(ex.getMessage());
     }
 
-
+    //validere token mellem brugerens token skabt at databasen og token fra body i post request
+    //Hvis valid, opdateres brugeren
     if(token.equals(tempUser.getToken())){
       System.out.println("Det virker\n userToken" + user.getToken() + "\n tokenBody" + token);
       //SQL statement
@@ -294,15 +294,6 @@ public class UserController {
       System.out.println("Du fucked op");
       return null;
     }
-
-
-
-
-
-
-
-
-
   }
 
 
