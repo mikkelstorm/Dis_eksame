@@ -239,4 +239,75 @@ public class UserController {
   }
 
 
+  public static User UpdateUser(User user){
+
+    // Skriver i log at vi er noget til dette step
+    Log.writeLog(UserController.class.getName(), user, "Update an User", 0);
+
+    // Tjekker om der er forbindelse til databasen
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+
+    //SQL statement
+    String sql = "SELECT * FROM user WHERE id=" + user.id;
+    String token = user.getToken();
+
+    ResultSet rs = dbCon.query(sql);
+    User tempUser = user;
+
+    try {
+      // tager kun en user, da der ikke er flere brugere med samme brugernavn og kode
+      if (rs.next()) {
+        tempUser =
+                new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"));
+
+        //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
+        tempUser.setToken(new Hashing().sha("TestShaToken")
+                + "." + new Hashing().sha(Integer.toString(tempUser.getId())));
+
+      } else {
+        System.out.println("Could not find User");
+      }
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+    }
+
+
+    if(token.equals(tempUser.getToken())){
+      System.out.println("Det virker\n userToken" + user.getToken() + "\n tokenBody" + token);
+      //SQL statement
+      String updateSql = "UPDATE user SET first_name= \'" + user.firstname + "\', " +
+                                          "last_name= \'" + user.lastname + "\', " +
+                                          "email= \'" + user.email + "\' " +
+                          "WHERE id=" + user.id;
+
+      dbCon.insert(updateSql);
+
+      return user;
+    }else{
+      System.out.println("Du fucked op");
+      return null;
+    }
+
+
+
+
+
+
+
+
+
+  }
+
+
+
+
+
+
 }

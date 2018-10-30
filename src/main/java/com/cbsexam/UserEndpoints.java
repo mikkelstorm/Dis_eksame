@@ -103,9 +103,9 @@ public class UserEndpoints {
     // loginUser returnere en token
     User userToken = UserController.loginUser(loginUser);
 
-    //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
-    userToken.setToken(new Hashing().sha("TestShaToken")
-                      + "." + new Hashing().sha(Integer.toString(userToken.getId())));
+//    //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
+//    userToken.setToken(new Hashing().sha("TestShaToken")
+//                      + "." + new Hashing().sha(Integer.toString(userToken.getId())));
 
     String json = new Gson().toJson(userToken);
 
@@ -120,13 +120,7 @@ public class UserEndpoints {
   }
 
 
-
-
-
-
-
-
-  // TODO: Make the system able to delete users
+  // TODO: Make the system able to delete users     :FIX
   @POST
   @Path("/delete")
   @Consumes(MediaType.APPLICATION_JSON)
@@ -138,11 +132,6 @@ public class UserEndpoints {
     // loginUser returnere en token
     User deleteUser = UserController.deleteUser(chosenUser);
 
-
-    String json = new Gson().toJson(deleteUser);
-
-
-    // Return the data to the user
     if (deleteUser != null) {
       // Return a response with status 200 and JSON as type
       return Response.status(200).entity("Du slettede brugeren: " + deleteUser.getEmail()).build();
@@ -152,10 +141,32 @@ public class UserEndpoints {
 
   }
 
-  // TODO: Make the system able to update users
-  public Response updateUser(String x) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+
+
+
+  // TODO: Make the system able to update users         :FIX
+  @POST
+  @Path("/update")
+  @Consumes(MediaType.APPLICATION_JSON)
+  public Response updateUser(String body) {
+
+    // Read the json from body and transfer it to a user class
+    User newUserData = new Gson().fromJson(body, User.class);
+
+    // Use the controller to add the user
+    User updateUser = UserController.UpdateUser(newUserData);
+
+    // Get the user back with the added ID and return it to the user
+    String json = new Gson().toJson(updateUser);
+
+    // Return the data to the user
+    if (updateUser != null) {
+      // Return a response with status 200 and JSON as type
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    } else {
+      return Response.status(400).entity("Could not create user").build();
+    }
+
   }
 }
