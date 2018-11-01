@@ -20,12 +20,6 @@ public class User {
     this.email = email;
   }
 
-  //Konstruktør med token
-  public User(String email, String token) {
-    this.email = email;
-    this.token = token;
-  }
-
 
 
   public int getId() {
