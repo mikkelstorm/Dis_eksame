@@ -7,12 +7,11 @@ import org.bouncycastle.util.encoders.Hex;
 
 public final class Hashing {
 
-
-
+  private long salt;
   // TODO: You should add a salt and make this secure       :FIX
 
   //Salt attribut der benyttes til at sikre hashing ekstra udover brugeres password
-  private long salt;
+
   /**
    * Hashing med salt metoder, der tager @param password og sætter den sammen med salt værdien som
    * String hashedPassword. Hvorefter det bliver hashed gennem md5-metoden og tilsidst retunere den hashed
@@ -20,17 +19,14 @@ public final class Hashing {
    * @param password
    * @return hashedPassword
    */
-  public String hashWithSaltMd5(String password){
 
-    //sætter salt til en long, der er lig oprettelses tidspunkt. Sikkert, da sandsynligheden for at
-    //gætte denne er næsten umulig
-    salt = System.currentTimeMillis();
-    //Opretter ny parameter af password, sammensat af salt og password
-    String hashedPassword = this.salt + password;
-    //Hasher den sammensatte password gennem md5 metoden
+  public String HashWithSaltMd5WithTimestamp(String password, Long timeStamp){
+
+    
+    String hashedPassword = timeStamp + password;
+
     hashedPassword = md5(hashedPassword);
 
-    //Returnere den hashed kode
     return hashedPassword;
   }
 

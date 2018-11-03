@@ -116,7 +116,7 @@ public class UserController {
             + "', '"
             + user.getLastname()
             + "', '"
-            + new Hashing().hashWithSaltMd5(user.getPassword())
+            + new Hashing().HashWithSaltMd5WithTimestamp(user.getPassword(), user.getCreatedTime())
             + "', '"
             + user.getEmail()
             + "', "
@@ -139,6 +139,7 @@ public class UserController {
   //Selv lavet metode
   public static User loginUser(User user){
 
+    User tempuser = user;
 
     // Skriver i log at vi er noget til dette step
     Log.writeLog(UserController.class.getName(), user, "Login as an user", 0);
@@ -149,7 +150,7 @@ public class UserController {
     }
 
     //SQL statement
-    String sql = "SELECT * FROM user WHERE email=\'" + user.getEmail() + "\' AND password=\'" + user.getPassword() + "\'";
+    String sql = "SELECT * FROM user WHERE email=\'" + user.getEmail() + "\'";
 
       //Kører en query med sql statement over brugernavn og kode. Returnere en tom liste, hvis der ikke findes
       //en bruger med samme brugernavn og kode i databasen
@@ -164,15 +165,28 @@ public class UserController {
                         rs.getString("first_name"),
                         rs.getString("last_name"),
                         rs.getString("password"),
-                        rs.getString("email"));
+                        rs.getString("email"),
+                        rs.getLong("created_at"));
 
-        //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
-        user.setToken(new Hashing().sha("TestShaToken")
-                + "." + new Hashing().sha(Integer.toString(user.getId())));
 
-        // returnere fundet bruger
-        return user;
+        System.out.println("sutden1");
+        System.out.println(new Hashing().HashWithSaltMd5WithTimestamp(tempuser.getPassword(), user.getCreatedTime()));
+        System.out.println(user.getPassword());
+        if(user.getPassword().equals(new Hashing().HashWithSaltMd5WithTimestamp(tempuser.getPassword(), user.getCreatedTime()))){
+          //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
+          user.setToken(new Hashing().sha("TestShaToken")
+                  + "." + new Hashing().sha(Integer.toString(user.getId())));
+          // returnere fundet bruger med valid password
+          return user;
+        }else{
+          // returnere null, da bruger ikke fundet
+          System.out.println("sutden2");
+          System.out.println("Wrong email or password");
+          return null;
+        }
+
       } else {
+        System.out.println("sutden3");
         System.out.println("Wrong email or password");
       }
     } catch (SQLException ex) {
