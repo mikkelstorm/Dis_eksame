@@ -84,6 +84,7 @@ public class OrderController {
     try {
       while(rs.next()) {
 
+        //TODO: Skal optimeres ved en enkel SQL linje med inner joints mm
         // Perhaps we could optimize things a bit here and get rid of nested queries.
         User user = UserController.getUser(rs.getInt("user_id"));
         ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
@@ -136,6 +137,9 @@ public class OrderController {
     order.setCustomer(UserController.createUser(order.getCustomer()));
 
     // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.
+
+    if(Validate(order.getCustomer().id, "Customer") & Validate(order.getBillingAddress().getId(), "BillingAddress") & Validate(order.getShippingAddress().getId(), "ShippingAddress")){
+
     // Insert the product in the DB
     int orderID = dbCon.insert(
         "INSERT INTO orders(user_id, billing_address_id, shipping_address_id, order_total, created_at, updated_at) VALUES("
@@ -151,6 +155,8 @@ public class OrderController {
             + ", "
             + order.getUpdatedAt()
             + ")");
+
+
 
     if (orderID != 0) {
       //Update the productid of the product before returning
@@ -169,5 +175,23 @@ public class OrderController {
 
     // Return order
     return order;
+    }else {
+      System.out.println("fejl i oprettelsen af order");
+      return null;
+    }
+
   }
+private static boolean Validate(int id, String metode){
+
+    boolean valid = false;
+    if (id > 0){
+      valid = true;
+    }else {
+      //TODO: skal laves så den returnere hvilke fejl i oprettelsen bliver printet i postman mm
+      System.out.println(metode);
+    }
+    return valid;
+  }
+
+
 }
