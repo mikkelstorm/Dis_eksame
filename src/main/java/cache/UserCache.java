@@ -8,16 +8,16 @@ import utils.Config;
 
 import java.util.ArrayList;
 
-//TODO: Build this cache and use it.
+//TODO: Build this cache and use it.        :FIX
 public class UserCache {
 
-    // List of products
+    // Opretter en arrayliste hvor brugere gemmes
     private ArrayList<User> users;
 
-    // Time cache should live
+    // Tidslængden cache gemmes i
     private long ttl;
 
-    // Sets when the cache has been created
+    // gemmer hvornår cache er blevet gemt
     private long created;
 
     public UserCache() {
@@ -26,22 +26,25 @@ public class UserCache {
 
     public ArrayList<User> getUsers(Boolean forceUpdate) {
 
-        // If we whis to clear cache, we can set force update.
-        // Otherwise we look at the age of the cache and figure out if we should update.
-        // If the list is empty we also check for new products
+        /**
+         * Først bliver der tjekket om der skal forceUpdate, dette kan gøres når man vil gemmemtvinge en update af cache
+         * Ellers bliver cache opdateret hvis cache er forældet
+         * Tilsidst kan en opdatering skyldes at der ikke er noget gemt i cache og derfor må hente cache først
+         */
         if (forceUpdate
                 || ((this.created + this.ttl) >= (System.currentTimeMillis() / 1000L))
                 || this.users == null) {
 
-            // Get products from controller, since we wish to update.
+            //Henter brugere fra UserController, da vi ønsker at opdatere cache
             ArrayList<User> users = UserController.getUsers();
 
-            // Set products for the instance and set created timestamp
+            //Sætter den opdatere arrayliste af ordre som instans, samt giver den et tidsstempel, for at kunne tjekke
+            //hvor gammel cache er.
             this.users = users;
             this.created = System.currentTimeMillis() / 1000L;
         }
 
-        // Return the documents
+        // Returnere cache over brugere
         return this.users;
 
     }

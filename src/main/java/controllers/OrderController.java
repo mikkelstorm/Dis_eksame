@@ -136,7 +136,6 @@ public class OrderController {
     order.setCustomer(UserController.createUser(order.getCustomer()));
 
     // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.
-
     // Insert the product in the DB
     int orderID = dbCon.insert(
         "INSERT INTO orders(user_id, billing_address_id, shipping_address_id, order_total, created_at, updated_at) VALUES("
@@ -157,7 +156,6 @@ public class OrderController {
       //Update the productid of the product before returning
       order.setId(orderID);
     }
-
     // Create an empty list in order to go trough items and then save them back with ID
     ArrayList<LineItem> items = new ArrayList<LineItem>();
 

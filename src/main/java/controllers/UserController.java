@@ -169,32 +169,26 @@ public class UserController {
                         rs.getLong("created_at"));
 
 
-        System.out.println("sutden1");
-        System.out.println(new Hashing().HashWithSaltMd5WithTimestamp(tempuser.getPassword(), user.getCreatedTime()));
-        System.out.println(user.getPassword());
-        if(user.getPassword().equals(new Hashing().HashWithSaltMd5WithTimestamp(tempuser.getPassword(), user.getCreatedTime()))){
-          //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
-          user.setToken(new Hashing().sha("TestShaToken")
-                  + "." + new Hashing().sha(Integer.toString(user.getId())));
-          // returnere fundet bruger med valid password
-          return user;
-        }else{
-          // returnere null, da bruger ikke fundet
-          System.out.println("sutden2");
-          System.out.println("Wrong email or password");
-          return null;
-        }
 
       } else {
-        System.out.println("sutden3");
         System.out.println("Wrong email or password");
       }
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
     }
 
-    //Returnere null user, hvis der ikke er fundet en bruger med pågældende brugernavn og kode
-    return user;
+    if(user.getPassword().equals(new Hashing().HashWithSaltMd5WithTimestamp(tempuser.getPassword(), user.getCreatedTime()))){
+      //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
+      user.setToken(new Hashing().sha("TestShaToken")
+              + "." + new Hashing().sha(Integer.toString(user.getId())));
+      // returnere fundet bruger med valid password
+      return user;
+    }else{
+      // returnere null, da bruger ikke fundet
+      System.out.println("Wrong email or password");
+      return null;
+    }
+
   }
 
 

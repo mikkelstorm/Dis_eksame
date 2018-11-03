@@ -22,7 +22,7 @@ public final class Hashing {
 
   public String HashWithSaltMd5WithTimestamp(String password, Long timeStamp){
 
-    
+
     String hashedPassword = timeStamp + password;
 
     hashedPassword = md5(hashedPassword);

@@ -8,17 +8,18 @@ import utils.Config;
 
 import java.util.ArrayList;
 
-//TODO: Build this cache and use it.
+//TODO: Build this cache and use it.        :FIX
 public class OrderCache {
 
-    // List of products
+    // Opretter en arrayliste hvor ordrer gemmes
     private ArrayList<Order> orders;
 
-    // Time cache should live
+    // Tidslængden cache gemmes i
     private long ttl;
 
-    // Sets when the cache has been created
+    // gemmer hvornår cache er blevet gemt
     private long created;
+
 
     public OrderCache() {
         this.ttl = Config.getOrderTtl();
@@ -26,22 +27,25 @@ public class OrderCache {
 
     public ArrayList<Order> getOrders(Boolean forceUpdate) {
 
-        // If we whis to clear cache, we can set force update.
-        // Otherwise we look at the age of the cache and figure out if we should update.
-        // If the list is empty we also check for new products
+        /**
+         * Først bliver der tjekket om der skal forceUpdate, dette kan gøres når man vil gemmemtvinge en update af cache
+         * Ellers bliver cache opdateret hvis cache er forældet
+         * Tilsidst kan en opdatering skyldes at der ikke er noget gemt i cache og derfor må hente cache først
+         */
         if (forceUpdate
                 || ((this.created + this.ttl) >= (System.currentTimeMillis() / 1000L))
                 || this.orders == null) {
 
-            // Get products from controller, since we wish to update.
+            //Henter ordrer fra OrderController, da vi ønsker at opdatere cache
             ArrayList<Order> orders = OrderController.getOrders();
 
-            // Set products for the instance and set created timestamp
+            //Sætter den opdatere arrayliste af ordre som instans, samt giver den et tidsstempel, for at kunne tjekke
+            //hvor gammel cache er.
             this.orders = orders;
             this.created = System.currentTimeMillis() / 1000L;
         }
 
-        // Return the documents
+        // Returnere cache over ordrer
         return this.orders;
 
     }

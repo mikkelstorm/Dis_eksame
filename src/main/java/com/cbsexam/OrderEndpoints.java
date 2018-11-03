@@ -47,8 +47,10 @@ public class OrderEndpoints {
   @Path("/")
   public Response getOrders() {
 
-    // Call our controller-layer in order to get the order from the DB
-    ArrayList<Order> orders = orderCache.getOrders(false);
+    //Kalder vores cache metode for ordrer, for at hente listen over ordrer hurtigere
+//    ArrayList<Order> orders = orderCache.getOrders(false);
+    ArrayList<Order> orders = OrderController.getOrders();
+
 
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(orders);

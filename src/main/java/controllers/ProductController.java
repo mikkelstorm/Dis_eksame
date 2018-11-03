@@ -97,7 +97,7 @@ public class ProductController {
       dbCon = new DatabaseController();
     }
 
-    // TODO: Use caching layer.
+    // TODO: Use caching layer.       :FIX lavet i endpoint
     String sql = "SELECT * FROM product";
 
 

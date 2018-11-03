@@ -58,7 +58,7 @@ public class UserEndpoints {
     // Write to log that we are here
     Log.writeLog(this.getClass().getName(), this, "Get all users", 0);
 
-    // Get a list of users
+    //Kalder vores cache metode for brugere, for at hente listen over brugere hurtigere
     ArrayList<User> users = userCache.getUsers(false);
 
     // Transfer users to json in order to return it to the user
