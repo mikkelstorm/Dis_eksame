@@ -22,7 +22,6 @@ public final class Hashing {
 
   public String HashWithSaltMd5WithTimestamp(String password, Long timeStamp){
 
-
     String hashedPassword = timeStamp + password;
 
     hashedPassword = md5(hashedPassword);
@@ -59,27 +58,7 @@ public final class Hashing {
     return null;
   }
 
-  // TODO: You should add a salt and make this secure         :FIX
-  /**
-   * Hashing med salt metoder, der tager @param password og sætter den sammen med salt værdien som
-   * String hashedPassword. Hvorefter det bliver hashed gennem sha-metoden og tilsidst retunere den hashed
-   * værdi af hashedPassword
-   * @param password
-   * @return hashedPassword
-   */
-  public String hashWithSaltSha(String password){
-
-    //sætter salt til en long, der er lig oprettelses tidspunkt. Sikkert, da sandsynligheden for at
-    //gætte denne er næsten umulig
-    salt = System.currentTimeMillis();
-    //Opretter ny parameter af password, sammensat af salt og password
-    String hashedPassword = this.salt + password;
-    //Hasher den sammensatte password gennem md5 metoden
-    hashedPassword = md5(hashedPassword);
-
-    //Returnere den hashed kode
-    return hashedPassword;
-  }
+  // TODO: You should add a salt and make this secure         :FIX, added in UserController in Token
 
   public String sha(String rawString) {
     try {

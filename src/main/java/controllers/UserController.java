@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import model.User;
+import utils.Config;
 import utils.Hashing;
 import utils.Log;
 
@@ -141,6 +142,7 @@ public class UserController {
 
     User tempuser = user;
 
+    String userPassword = user.getPassword();
     // Skriver i log at vi er noget til dette step
     Log.writeLog(UserController.class.getName(), user, "Login as an user", 0);
 
@@ -179,8 +181,9 @@ public class UserController {
 
     if(user.getPassword().equals(new Hashing().HashWithSaltMd5WithTimestamp(tempuser.getPassword(), user.getCreatedTime()))){
       //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
-      user.setToken(new Hashing().sha("TestShaToken")
+      user.setToken(new Hashing().sha(Config.getTokenSalt())
               + "." + new Hashing().sha(Integer.toString(user.getId())));
+      user.setPassword(tempuser.getPassword());
       // returnere fundet bruger med valid password
       return user;
     }else{
@@ -220,7 +223,7 @@ public class UserController {
                         rs.getString("email"));
 
         //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
-        user.setToken(new Hashing().sha("TestShaToken")
+        user.setToken(new Hashing().sha(Config.getTokenSalt())
                 + "." + new Hashing().sha(Integer.toString(user.getId())));
 
       } else {
@@ -275,7 +278,7 @@ public class UserController {
                         rs.getString("email"));
 
         //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
-        tempUser.setToken(new Hashing().sha("TestShaToken")
+        tempUser.setToken(new Hashing().sha(Config.getTokenSalt())
                 + "." + new Hashing().sha(Integer.toString(tempUser.getId())));
 
       } else {

@@ -23,6 +23,9 @@ public final class Config {
   private static long ORDER_TTL;
   private static long USER_TTL;
   private static String ENCRYPTION_CODE;
+  private static String HASHING_SALT;
+  private static String TOKEN_SALT;
+
 
   public static long getProductTtl() {
     return PRODUCT_TTL;
@@ -34,6 +37,10 @@ public final class Config {
 
   public static String getEncryptionCode() {
     return ENCRYPTION_CODE;
+  }
+
+  public static String getTokenSalt() {
+    return TOKEN_SALT;
   }
 
   public static long getUserTtl() {
@@ -117,6 +124,7 @@ public final class Config {
     ORDER_TTL = json.get("ORDER_TTL").getAsLong();
     USER_TTL = json.get("USER_TTL").getAsLong();
     ENCRYPTION_CODE = json.get("ENCRYPTION_CODE").toString().replace("\"", "");
+    TOKEN_SALT = json.get("TOKEN_SALT").toString().replace("\"", "");
 
 
 
