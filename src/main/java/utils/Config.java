@@ -23,7 +23,6 @@ public final class Config {
   private static long ORDER_TTL;
   private static long USER_TTL;
   private static String ENCRYPTION_CODE;
-  private static String HASHING_SALT;
   private static String TOKEN_SALT;
 
 

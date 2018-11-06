@@ -108,32 +108,55 @@ public class UserController {
       dbCon = new DatabaseController();
     }
 
+    //TODO: tjek om der findes flere med den email?
+    String sql = "SELECT * FROM user WHERE email=\'" + user.getEmail() + "\'";
+    ResultSet rs = dbCon.query(sql);
+    Boolean chack = false;
+
+    try {
+      // tager kun en user, da der ikke er flere brugere med samme email og kode
+      if (rs.next()) {
+
+        chack = true;
+        System.out.println("Brugeren findes ikke i databasen");
+        return null;
+
+      } else {
+        chack = false;
+        System.out.println("Brugeren findes ikke i databasen");
+      }
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+    }
+
     // Insert the user in the DB
     // TODO: Hash the user password before saving it.       :FIX
     //Hashing af password sker ved at gemme password igennem metoden hashWithSaltMd5
-    int userID = dbCon.insert(
-        "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
-            + user.getFirstname()
-            + "', '"
-            + user.getLastname()
-            + "', '"
-            + new Hashing().HashWithSaltMd5WithTimestamp(user.getPassword(), user.getCreatedTime())
-            + "', '"
-            + user.getEmail()
-            + "', "
-            + user.getCreatedTime()
-            + ")");
+    if(!chack) {
+      int userID = dbCon.insert(
+              "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
+                      + user.getFirstname()
+                      + "', '"
+                      + user.getLastname()
+                      + "', '"
+                      + new Hashing().HashWithSaltMd5WithTimestamp(user.getPassword(), user.getCreatedTime())
+                      + "', '"
+                      + user.getEmail()
+                      + "', "
+                      + user.getCreatedTime()
+                      + ")");
 
-    if (userID != 0) {
-      //Update the userid of the user before returning
-      user.setId(userID);
-    } else{
-      // Return null if user has not been inserted into database
-      return null;
+      if (userID != 0) {
+        //Update the userid of the user before returning
+        user.setId(userID);
+        return user;
+      } else {
+        // Return null if user has not been inserted into database
+        return null;
+      }
     }
-
     // Return user
-    return user;
+    return null;
   }
 
 
@@ -169,8 +192,6 @@ public class UserController {
                         rs.getString("password"),
                         rs.getString("email"),
                         rs.getLong("created_at"));
-
-
 
       } else {
         System.out.println("Wrong email or password");

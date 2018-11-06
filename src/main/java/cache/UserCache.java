@@ -35,6 +35,7 @@ public class UserCache {
                 || ((this.created + this.ttl) >= (System.currentTimeMillis() / 1000L))
                 || this.users == null) {
 
+
             //Henter brugere fra UserController, da vi ønsker at opdatere cache
             ArrayList<User> users = UserController.getUsers();
 
