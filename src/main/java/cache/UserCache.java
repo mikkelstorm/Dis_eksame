@@ -32,9 +32,12 @@ public class UserCache {
          * Tilsidst kan en opdatering skyldes at der ikke er noget gemt i cache og derfor må hente cache først
          */
         if (forceUpdate
-                || ((this.created + this.ttl) >= (System.currentTimeMillis() / 1000L))
+                || ((this.created + this.ttl) <= (System.currentTimeMillis() / 1000L ))
                 || this.users == null) {
 
+            System.out.println(this.created + ttl);
+            System.out.println(System.currentTimeMillis() / 1000L);
+            System.out.println("Force hver gang");
 
             //Henter brugere fra UserController, da vi ønsker at opdatere cache
             ArrayList<User> users = UserController.getUsers();

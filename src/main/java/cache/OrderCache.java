@@ -33,7 +33,7 @@ public class OrderCache {
          * Tilsidst kan en opdatering skyldes at der ikke er noget gemt i cache og derfor må hente cache først
          */
         if (forceUpdate
-                || ((this.created + this.ttl) >= (System.currentTimeMillis() / 1000L))
+                || ((this.created + this.ttl) <= (System.currentTimeMillis() / 1000L))
                 || this.orders == null) {
 
             //Henter ordrer fra OrderController, da vi ønsker at opdatere cache
