@@ -1,13 +1,16 @@
 package controllers;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import model.Address;
 import model.LineItem;
 import model.Order;
 import model.User;
 import utils.Log;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class OrderController {
 
@@ -140,6 +143,7 @@ public class OrderController {
 
     if(Validate(order.getCustomer().id, "Customer") & Validate(order.getBillingAddress().getId(), "BillingAddress") & Validate(order.getShippingAddress().getId(), "ShippingAddress")){
 
+
     // Insert the product in the DB
     int orderID = dbCon.insert(
         "INSERT INTO orders(user_id, billing_address_id, shipping_address_id, order_total, created_at, updated_at) VALUES("
@@ -181,17 +185,91 @@ public class OrderController {
     }
 
   }
-private static boolean Validate(int id, String metode){
+
+  private static boolean Validate(int id, String metode) {
 
     boolean valid = false;
-    if (id > 0){
+    if (id > 0) {
       valid = true;
-    }else {
+    } else {
       //TODO: skal laves så den returnere hvilke fejl i oprettelsen bliver printet i postman mm
       System.out.println(metode);
     }
     return valid;
   }
+
+  public static Order createOrderTest(Order order) throws SQLException {
+
+    // Write in log that we've reach this step
+    Log.writeLog(OrderController.class.getName(), order, "Actually creating a order in DB", 0);
+
+    // Set creation and updated time for order.
+    order.setCreatedAt(System.currentTimeMillis() / 1000L);
+    order.setUpdatedAt(System.currentTimeMillis() / 1000L);
+
+
+    // Save addresses to database and save them back to initial order instance
+    order.setBillingAddress(AddressController.createAddress(order.getBillingAddress()));
+    order.setShippingAddress(AddressController.createAddress(order.getShippingAddress()));
+
+    // Save the user to the database and save them back to initial order instance
+    order.setCustomer(UserController.createUser(order.getCustomer()));
+
+    // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.
+
+
+    Connection dbCon = null;
+    PreparedStatement preparedStatement = null;
+    String insertTableSQL = "INSERT INTO orders"
+            + "(user_id, billing_address_id, shipping_address_id, order_total, created_at, updated_at) VALUES"
+            + "(?,?,?,?,?,?)";
+
+
+
+    if(Validate(order.getCustomer().id, "Customer") & Validate(order.getBillingAddress().getId(), "BillingAddress") & Validate(order.getShippingAddress().getId(), "ShippingAddress")){
+
+      try {
+        dbCon = DatabaseController.getConnection();
+        dbCon.setAutoCommit(false);
+
+        preparedStatement = dbCon.prepareStatement(insertTableSQL);
+
+
+        preparedStatement.setInt(1,order.getCustomer().getId());
+        preparedStatement.setInt(2,order.getBillingAddress().getId());
+        preparedStatement.setInt(3,order.getShippingAddress().getId());
+        preparedStatement.setFloat(4,order.calculateOrderTotal());
+        preparedStatement.setLong(5,order.getCreatedAt());
+        preparedStatement.setLong(6,order.getUpdatedAt());
+
+        preparedStatement.executeUpdate();
+
+        dbCon.commit();
+
+      }catch (SQLException e) {
+        e.printStackTrace();//or whatever
+        //rollback the changes
+        dbCon.rollback();
+      } finally {
+        //close the PreparedStatement and the connection if not null
+        if (preparedStatement != null) {
+          preparedStatement.close();
+        }
+        if (dbCon != null) {
+          dbCon.close();
+        }
+      }
+
+      // Return order
+      return order;
+    }else {
+      System.out.println("fejl i oprettelsen af order");
+      return null;
+    }
+
+  }
+
+
 
 
 }
