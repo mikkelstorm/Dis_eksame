@@ -141,6 +141,15 @@ public class OrderController {
 
     // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.
 
+//
+//    Connection dbCon = null;
+//    PreparedStatement preparedStatement = null;
+//    dbCon = DatabaseController.getConnection();
+//    dbCon.setAutoCommit(false);
+//
+//    preparedStatement = dbCon.prepareStatement(insertTableSQL);
+
+
     if(Validate(order.getCustomer().id, "Customer") & Validate(order.getBillingAddress().getId(), "BillingAddress") & Validate(order.getShippingAddress().getId(), "ShippingAddress")){
 
 
@@ -198,7 +207,14 @@ public class OrderController {
     return valid;
   }
 
-  public static Order createOrderTest(Order order) throws SQLException {
+
+
+//  Connection dbConTest = null;
+//  PreparedStatement preparedStatement = null;
+//  dbConTest = DatabaseController.getConnection();
+//  dbConTest.setAutoCommit(false);
+
+  public static Order createOrderTest(Order order) {
 
     // Write in log that we've reach this step
     Log.writeLog(OrderController.class.getName(), order, "Actually creating a order in DB", 0);
@@ -207,6 +223,10 @@ public class OrderController {
     order.setCreatedAt(System.currentTimeMillis() / 1000L);
     order.setUpdatedAt(System.currentTimeMillis() / 1000L);
 
+    // Check for DB Connection
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
 
     // Save addresses to database and save them back to initial order instance
     order.setBillingAddress(AddressController.createAddress(order.getBillingAddress()));
@@ -217,56 +237,79 @@ public class OrderController {
 
     // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.
 
-
-    Connection dbCon = null;
-    PreparedStatement preparedStatement = null;
-    String insertTableSQL = "INSERT INTO orders"
-            + "(user_id, billing_address_id, shipping_address_id, order_total, created_at, updated_at) VALUES"
-            + "(?,?,?,?,?,?)";
+    Connection dbConTest = null;
+    dbConTest = DatabaseController.getConnection();
+    int orderID;
 
 
+    // https://stackoverflow.com/questions/40761905/best-practices-for-sql-transactions-in-java
+    try {
+      dbConTest.setAutoCommit(false);
 
-    if(Validate(order.getCustomer().id, "Customer") & Validate(order.getBillingAddress().getId(), "BillingAddress") & Validate(order.getShippingAddress().getId(), "ShippingAddress")){
+      orderID = dbCon.insert(
+              "INSERT INTO orders(user_id, billing_address_id, shipping_address_id, order_total, created_at, updated_at) VALUES("
+                      + order.getCustomer().getId()
+                      + ", "
+                      + order.getBillingAddress().getId()
+                      + ", "
+                      + order.getShippingAddress().getId()
+                      + ", "
+                      + order.calculateOrderTotal()
+                      + ", "
+                      + order.getCreatedAt()
+                      + ", "
+                      + order.getUpdatedAt()
+                      + ")");
 
-      try {
-        dbCon = DatabaseController.getConnection();
-        dbCon.setAutoCommit(false);
-
-        preparedStatement = dbCon.prepareStatement(insertTableSQL);
 
 
-        preparedStatement.setInt(1,order.getCustomer().getId());
-        preparedStatement.setInt(2,order.getBillingAddress().getId());
-        preparedStatement.setInt(3,order.getShippingAddress().getId());
-        preparedStatement.setFloat(4,order.calculateOrderTotal());
-        preparedStatement.setLong(5,order.getCreatedAt());
-        preparedStatement.setLong(6,order.getUpdatedAt());
+      if (orderID != 0) {
+        //Update the productid of the product before returning
+        order.setId(orderID);
+      }
+      // Create an empty list in order to go trough items and then save them back with ID
+      ArrayList<LineItem> items = new ArrayList<LineItem>();
 
-        preparedStatement.executeUpdate();
-
-        dbCon.commit();
-
-      }catch (SQLException e) {
-        e.printStackTrace();//or whatever
-        //rollback the changes
-        dbCon.rollback();
-      } finally {
-        //close the PreparedStatement and the connection if not null
-        if (preparedStatement != null) {
-          preparedStatement.close();
-        }
-        if (dbCon != null) {
-          dbCon.close();
-        }
+      // Save line items to database
+      for(LineItem item : order.getLineItems()){
+        item = LineItemController.createLineItem(item, order.getId());
+        items.add(item);
       }
 
-      // Return order
-      return order;
-    }else {
-      System.out.println("fejl i oprettelsen af order");
-      return null;
+      order.setLineItems(items);
+
+      dbConTest.commit();
+
+
+    }catch (SQLException e){
+      e.printStackTrace();
+      try{
+        System.out.print("Transaction is being rolled back");
+        dbConTest.rollback();
+      }catch (SQLException er){
+        er.printStackTrace();
+      }
+
+    }finally {
+      if (dbConTest != null){
+        try {
+          dbConTest.close();
+        }catch (SQLException ec){
+          ec.printStackTrace();
+        }
+      }
+      try {
+        dbConTest.setAutoCommit(true);
+      }catch (SQLException esac){
+        esac.printStackTrace();
+      }
     }
 
+    if (order.getId() != 0){
+      return order;
+    }else {
+      return null;
+    }
   }
 
 
