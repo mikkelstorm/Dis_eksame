@@ -118,7 +118,7 @@ public class UserController {
       if (rs.next()) {
 
         chack = true;
-        System.out.println("Brugeren findes ikke i databasen");
+        System.out.println("Brugeren findes i databasen");
         return null;
 
       } else {

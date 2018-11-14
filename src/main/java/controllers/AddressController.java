@@ -36,8 +36,7 @@ public class AddressController {
                 rs.getString("name"),
                 rs.getString("street_address"),
                 rs.getString("city"),
-                rs.getString("zipcode")
-                );
+                rs.getString("zipcode"));
 
         // Return our newly added object
         return address;

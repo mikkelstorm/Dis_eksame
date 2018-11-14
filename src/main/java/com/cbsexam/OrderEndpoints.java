@@ -49,7 +49,7 @@ public class OrderEndpoints {
 
     //Kalder vores cache metode for ordrer, for at hente listen over ordrer hurtigere
 //    ArrayList<Order> orders = orderCache.getOrders(false);
-    ArrayList<Order> orders = OrderController.getOrders();
+    ArrayList<Order> orders = OrderController.getOrdersTest();
 
 
     // We convert the java object to json with GSON library imported in Maven
@@ -71,7 +71,7 @@ public class OrderEndpoints {
     Order newOrder = new Gson().fromJson(body, Order.class);
 
     // Use the controller to add the user
-    Order createdOrder = OrderController.createOrder(newOrder);
+    Order createdOrder = OrderController.createOrderTest(newOrder);
 
     // Get the user back with the added ID and return it to the user
     String json = new Gson().toJson(createdOrder);

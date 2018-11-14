@@ -1,9 +1,6 @@
 package controllers;
 
-import model.Address;
-import model.LineItem;
-import model.Order;
-import model.User;
+import model.*;
 import utils.Log;
 
 import java.sql.Connection;
@@ -141,14 +138,6 @@ public class OrderController {
 
     // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.
 
-//
-//    Connection dbCon = null;
-//    PreparedStatement preparedStatement = null;
-//    dbCon = DatabaseController.getConnection();
-//    dbCon.setAutoCommit(false);
-//
-//    preparedStatement = dbCon.prepareStatement(insertTableSQL);
-
 
     if(Validate(order.getCustomer().id, "Customer") & Validate(order.getBillingAddress().getId(), "BillingAddress") & Validate(order.getShippingAddress().getId(), "ShippingAddress")){
 
@@ -235,7 +224,7 @@ public class OrderController {
     // Save the user to the database and save them back to initial order instance
     order.setCustomer(UserController.createUser(order.getCustomer()));
 
-    // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.
+    // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.   FIX
 
     Connection dbConTest = null;
     dbConTest = DatabaseController.getConnection();
@@ -312,6 +301,100 @@ public class OrderController {
     }
   }
 
+  public static ArrayList<Order> getOrdersTest() {
+
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+
+    String sql = "SELECT * FROM orders";
+
+    String sqlTest = "SELECT * FROM orders\n" +
+            "INNER JOIN user ON orders.user_id = user.id\n" +
+//            "INNER JOIN line_item ON orders.id = line_item.order_id\n" +
+//            "INNER JOIN product ON line_item.product_id = product.id\n" +
+            "INNER JOIN address ON orders.billing_address_id = address.id";
+
+    ResultSet rs = dbCon.query(sqlTest);
+    ArrayList<Order> orders = new ArrayList<Order>();
+
+    try {
+      while(rs.next()) {
+
+        //TODO: Skal optimeres ved en enkel SQL linje med inner joints mm
+        // Perhaps we could optimize things a bit here and get rid of nested queries.
+        User user =
+                new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"));
+
+        ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
+
+//        Product product =
+//                new Product(
+//                        rs.getInt("id"),
+//                        rs.getString("product_name"),
+//                        rs.getString("sku"),
+//                        rs.getFloat("price"),
+//                        rs.getString("description"),
+//                        rs.getInt("stock"));
+//
+//        ArrayList<LineItem> items = new ArrayList<>();
+//
+//        LineItem lineItems =
+//                new LineItem(
+//                        rs.getInt("id"),
+//                        product,
+//                        rs.getInt("quantity"),
+//                        rs.getFloat("price"));
+//
+//        items.add(lineItems);
+
+
+        Address billingAddress =
+                new Address(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("street_address"),
+                        rs.getString("city"),
+                        rs.getString("zipcode"));
+
+          Address shippingAddress = AddressController.getAddress(rs.getInt("shipping_address_id"));
+//        Address shippingAddress =
+//                new Address(
+//                        rs.getInt("id"),
+//                        rs.getString("name"),
+//                        rs.getString("street_address"),
+//                        rs.getString("city"),
+//                        rs.getString("zipcode"));
+
+
+        // Create an order from the database data
+        Order order =
+                new Order(
+                        rs.getInt("id"),
+                        user,
+                        lineItems,
+                        billingAddress,
+                        shippingAddress,
+                        rs.getFloat("order_total"),
+                        rs.getLong("created_at"),
+                        rs.getLong("updated_at"));
+
+        // Add order to our list
+        orders.add(order);
+
+      }
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+    }
+
+    // return the orders
+    return orders;
+  }
 
 
 
