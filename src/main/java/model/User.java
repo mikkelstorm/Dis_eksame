@@ -8,6 +8,7 @@ public class User {
   public String email;
   private String password;
   private long createdTime;
+  private String newEmail;
 
   //Attribut Token
   private String token;
@@ -29,7 +30,17 @@ public class User {
     this.createdTime = createdTime;
   }
 
+  public User(String firstname, String lastname, String password, String email, String newEmail) {
+    this.firstname = firstname;
+    this.lastname = lastname;
+    this.password = password;
+    this.email = email;
+    this.newEmail = newEmail;
+  }
 
+  public String getNewEmail() {
+    return newEmail;
+  }
 
   public int getId() {
     return id;

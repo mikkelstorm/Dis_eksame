@@ -314,10 +314,11 @@ public class UserController {
     if(token.equals(tempUser.getToken())){
       System.out.println("Det virker\n userToken" + user.getToken() + "\n tokenBody" + token);
       //SQL statement
-      String updateSql = "UPDATE user SET first_name= \'" + user.firstname + "\', " +
-                                          "last_name= \'" + user.lastname + "\', " +
-                                          "email= \'" + user.email + "\' " +
-                          "WHERE id=" + user.id;
+      String updateSql = "UPDATE user SET first_name= \'" + user.getFirstname() + "\', " +
+                                          "last_name= \'" + user.getLastname() + "\', " +
+                                          "password= \'" + new Hashing().HashWithSaltMd5WithTimestamp(user.getPassword(), tempUser.getCreatedTime()) + "\', " +
+                                          "email= \'" + user.getNewEmail() + "\' " +
+                          "WHERE email= \'" + user.getEmail() + "\'";
 
       dbCon.insert(updateSql);
 
