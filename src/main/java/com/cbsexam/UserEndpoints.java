@@ -36,6 +36,7 @@ public class UserEndpoints {
     String json = new Gson().toJson(user);
 
     // TODO: Add Encryption to JSON         :FIX check turn on/off
+    //Kryptere vores json text gennem en XOR
 //    json = Encryption.encryptDecryptXOR(json);
 
 
@@ -65,45 +66,70 @@ public class UserEndpoints {
     String json = new Gson().toJson(users);
 
     // TODO: Add Encryption to JSON           :FIX   check turn on/off
+    //Kryptere vores json text gennem en XOR
 //    json = Encryption.encryptDecryptXOR(json);
 
     // Return the users with the status code 200
     return Response.status(200).type(MediaType.APPLICATION_JSON).entity(json).build();
   }
 
+  /**
+   * Klassen CreateUser har til formål at oprette en bruger gennem et POST call. Dette gøres ved at brugeren
+   * sender en POST call med følgende variabler.
+   * - "firstname": "fornavn",
+   * - "lastname": "efternavn",
+   * - "email": "email@abc.dk",
+   * - "password": "kode123"
+   * Alt dette bliver ændret fra Json til Gson, og derefter kørt igennem UserControllerens createUser metode
+   * Hvis det er succesfuld bliver der returneret en bruger og ellers bliver der returneret en statuskode 400.
+   * @param body Json bruger
+   * @return bruger eller statuskode
+   */
   @POST
   @Path("/")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response createUser(String body) {
+  public Response CreateUser(String body) {
 
-    // Read the json from body and transfer it to a user class
+    //læser Json fra POST body og gemmer det som en User i Gson format
     User newUser = new Gson().fromJson(body, User.class);
 
-    // Use the controller to add the user
+    //Kører UserControllerens metode createUser med den nye bruger
     User createUser = UserController.createUser(newUser);
 
-    // Get the user back with the added ID and return it to the user
+    //For brugeren igen med et ID og createdTime hvis oprettelsen har været succesfuld
     String json = new Gson().toJson(createUser);
 
-    // Return the data to the user
+    // Returnere data til brugeren, som enten er brugerens information eller statuskode 400 hvis det er gået galt.
     if (createUser != null) {
-      // Return a response with status 200 and JSON as type
+      //Returnere en svar med statuskode 200 og brugeren i JSON text.
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
     } else {
+      //Returnere statuskode 400 hvis det ikke var muligt at lave en bruger
       return Response.status(400).entity("Could not create user").build();
     }
   }
 
+  /**
+   * Klassen LoginUser har til formål at logge ind som en bruger, for at modtage en Token. Dette gøres ved at brugeren
+   * sender en POST call med følgende variabler.
+   * - "email": "email@abc.dk",
+   * - "password": "kode123"
+   * Alt dette bliver ændret fra Json til Gson, og derefter kørt igennem UserControllerens loginUser metode
+   * Hvis det er succesfuld bliver der returneret en bruger med en oprettet Token
+   * og ellers bliver der returneret en statuskode 400.
+   * @param body Json
+   * @return Bruger med Token eller statuskode 400
+   */
   // TODO: Make the system able to login users and assign them a token to use throughout the system.    :FIX
   @POST
   @Path("/login")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response loginUser(String body) {
+  public Response LoginUser(String body) {
 
     // læser json body og laver det om til en ny User/bruger
     User loginUser = new Gson().fromJson(body, User.class);
 
-    // loginUser returnere en token
+    // Kører brugeren loginUser og returnere en Token hvis succesfuld
     User userToken = UserController.loginUser(loginUser);
 
     //Gemmer bruger data som Json format
@@ -119,17 +145,27 @@ public class UserEndpoints {
     }
   }
 
-
+  /**
+   * Klassen DeleteUser har til formål at slette en bruger ved at skrive en email og token for brugeren.
+   * Dette gøres ved at brugeren sender en POST call med følgende variabler.
+   * - "email": "email@abc.dk",
+   * - "token": "token.token"
+   * Alt dette bliver ændret fra Json til Gson, og derefter kørt igennem UserControllerens DeleteUser metode
+   * Hvis det er succesfuld bliver der returneret en tekst om at brugeren er slettet
+   * og ellers bliver der returneret en statuskode 400.
+   * @param body Json
+   * @return statuskode 200 at bruger er slettet eller statuskode 400 noget gik galt
+   */
   // TODO: Make the system able to delete users     :FIX
   @POST
   @Path("/delete")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response deleteUser(String body) {
+  public Response DeleteUser(String body) {
 
     // læser json body og laver det om til en ny User/bruger i Gson format
     User chosenUser = new Gson().fromJson(body, User.class);
 
-    //putter brugeren ind i slet bruger metode
+    //putter brugeren ind i deleteUser metode
     User deleteUser = UserController.deleteUser(chosenUser);
 
     // Returnere data til brugeren
@@ -142,10 +178,21 @@ public class UserEndpoints {
 
   }
 
-
-
-
-
+  /**
+   * Klassen UpdateUser har til formål at updatere en bruger ved brug af token.
+   * Dette gøres ved at brugeren sender en POST call med følgende variabler.
+   * - "firstname": "fornavn",
+   * - "lastname": "efternavn",
+   * - "password": "kode123",
+   * - "email": "email@abc.dk",
+   * - "newEmail": "nyemail@abc.dk",
+   * - "token": "token.token"
+   * Alt dette bliver ændret fra Json til Gson, og derefter kørt igennem UserControllerens UpdateUser metode
+   * Hvis det er succesfuld bliver der returneret en tekst om at brugeren er slettet
+   * og ellers bliver der returneret en statuskode 400.
+   * @param body Json
+   * @return opdateret bruger eller statuskode 400 ved fejl
+   */
   // TODO: Make the system able to update users         :FIX
   @POST
   @Path("/update")

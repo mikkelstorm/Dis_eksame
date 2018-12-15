@@ -95,6 +95,11 @@ public class UserController {
     return users;
   }
 
+  /**
+   *
+   * @param user
+   * @return
+   */
   public static User createUser(User user) {
 
     // Write in log that we've reach this step
@@ -108,7 +113,7 @@ public class UserController {
       dbCon = new DatabaseController();
     }
 
-    //TODO: tjek om der findes flere med den email?
+    //TODO: tjek om der findes flere med den email?     :FIX - egen todo
     String sql = "SELECT * FROM user WHERE email=\'" + user.getEmail() + "\'";
     ResultSet rs = dbCon.query(sql);
     Boolean chack = false;
@@ -131,7 +136,9 @@ public class UserController {
 
     // Insert the user in the DB
     // TODO: Hash the user password before saving it.       :FIX
-    //Hashing af password sker ved at gemme password igennem metoden hashWithSaltMd5
+    //Hashing af password sker ved at gemme password igennem metoden hashWithSaltMd5WithTimestamp
+    //Dette gør at koden bliver gemt ved at køre stingen "password" + "tiden når oprettelsen sker" og hasher det
+    //saltet vil være created_time
     if(!chack) {
       int userID = dbCon.insert(
               "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
@@ -160,7 +167,11 @@ public class UserController {
   }
 
 
-  //Selv lavet metode
+  /**
+   *
+   * @param user
+   * @return
+   */
   public static User loginUser(User user){
 
     User tempuser = user;
@@ -194,7 +205,7 @@ public class UserController {
                         rs.getLong("created_at"));
 
       } else {
-        System.out.println("Wrong email or password");
+        System.out.println("Forkert email eller kodeord");
       }
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
@@ -209,7 +220,7 @@ public class UserController {
       return user;
     }else{
       // returnere null, da bruger ikke fundet
-      System.out.println("Wrong email or password");
+      System.out.println("Token matcher ikke");
       return null;
     }
 
@@ -248,7 +259,7 @@ public class UserController {
                 + "." + new Hashing().sha(Integer.toString(user.getId())));
 
       } else {
-        System.out.println("Something went wrong");
+        System.out.println("Noget gik galt");
       }
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
@@ -264,7 +275,7 @@ public class UserController {
       return user;
 
     }else{
-      System.out.println("Du fucked op");
+      System.out.println("Token matcher ikke");
       return null;
     }
   }

@@ -31,11 +31,11 @@ public class OrderEndpoints {
     Order order = OrderController.getOrder(idOrder);
 
 
-
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(order);
 
     // TODO: Add Encryption to JSON             :FIX check turn on/off
+    //Kryptere vores json text gennem en XOR
 //    json = Encryption.encryptDecryptXOR(json);
 
     // Return a response with status 200 and JSON as type
@@ -49,13 +49,14 @@ public class OrderEndpoints {
 
     //Kalder vores cache metode for ordrer, for at hente listen over ordrer hurtigere
 //    ArrayList<Order> orders = orderCache.getOrders(false);
-    ArrayList<Order> orders = OrderController.getOrdersTest();
+    ArrayList<Order> orders = new OrderCache().getOrders(false);
 
 
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(orders);
 
     // TODO: Add Encryption to JSON         :FIX    check turn on/off
+    //Kryptere vores json text gennem en XOR
 //    json = Encryption.encryptDecryptXOR(json);
 
     // Return a response with status 200 and JSON as type

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 public class OrderController {
 
   private static DatabaseController dbCon;
+  private static Connection dbConTest = null;
 
   public OrderController() {
     dbCon = new DatabaseController();
@@ -217,6 +218,14 @@ public class OrderController {
       dbCon = new DatabaseController();
     }
 
+
+    // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.   FIX
+    try {
+    Connection dbConTest = null;
+    dbConTest = DatabaseController.getConnection();
+    int orderID;
+
+      dbConTest.setAutoCommit(false);
     // Save addresses to database and save them back to initial order instance
     order.setBillingAddress(AddressController.createAddress(order.getBillingAddress()));
     order.setShippingAddress(AddressController.createAddress(order.getShippingAddress()));
@@ -224,16 +233,7 @@ public class OrderController {
     // Save the user to the database and save them back to initial order instance
     order.setCustomer(UserController.createUser(order.getCustomer()));
 
-    // TODO: Enable transactions in order for us to not save the order if somethings fails for some of the other inserts.   FIX
-
-    Connection dbConTest = null;
-    dbConTest = DatabaseController.getConnection();
-    int orderID;
-
-
     // https://stackoverflow.com/questions/40761905/best-practices-for-sql-transactions-in-java
-    try {
-      dbConTest.setAutoCommit(false);
 
       orderID = dbCon.insert(
               "INSERT INTO orders(user_id, billing_address_id, shipping_address_id, order_total, created_at, updated_at) VALUES("
@@ -280,6 +280,11 @@ public class OrderController {
       }
 
     }finally {
+      try {
+        dbConTest.setAutoCommit(true);
+      }catch (SQLException e){
+        e.printStackTrace();
+      }
       if (dbConTest != null){
         try {
           dbConTest.close();
@@ -287,18 +292,13 @@ public class OrderController {
           ec.printStackTrace();
         }
       }
-      try {
-        dbConTest.setAutoCommit(true);
-      }catch (SQLException esac){
-        esac.printStackTrace();
-      }
     }
-
     if (order.getId() != 0){
       return order;
     }else {
       return null;
     }
+
   }
 
   public static ArrayList<Order> getOrdersTest() {

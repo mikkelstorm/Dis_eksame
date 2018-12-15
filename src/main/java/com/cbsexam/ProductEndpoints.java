@@ -34,6 +34,7 @@ public class ProductEndpoints {
     String json = new Gson().toJson(product);
 
     // TODO: Add Encryption to JSON       :FIX  check turn on/off
+    //Kryptere vores json text gennem en XOR
 //    json = Encryption.encryptDecryptXOR(json);
 
     // Return a response with status 200 and JSON as type
@@ -52,6 +53,7 @@ public class ProductEndpoints {
     String json = new Gson().toJson(products);
 
     // TODO: Add Encryption to JSON         :FIX  check turn on/off
+    //Kryptere vores json text gennem en XOR
 //    json = Encryption.encryptDecryptXOR(json);
 
     // Return a response with status 200 and JSON as type

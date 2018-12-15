@@ -9,6 +9,11 @@ import utils.Config;
 import java.util.ArrayList;
 
 //TODO: Build this cache and use it.        :FIX
+/**
+ * Klassen UserCache har til formål at gemme databasen i en cache, for at fremme hastigheden af applikationen.
+ * Dette gøres ved gemme databasen i en ArrayList, som opdateres enten hvis cachen er forældet eller cachen er tom eller
+ * Updateringen bliver gennemtvunget.
+ */
 public class UserCache {
 
     // Opretter en arrayliste hvor brugere gemmes
@@ -20,17 +25,21 @@ public class UserCache {
     // gemmer hvornår cache er blevet gemt
     private long created;
 
+    /**
+     * UserCache har til formål at hente cachen time to live, for at kunne bliver tjekket i getOrders
+     */
     public UserCache() {
         this.ttl = Config.getUserTtl();
     }
 
+    /**
+     * Metoden tjekker ført om der skal forceUpdate, dette kan gøres når man vil gemmemtvinge en update af cache
+     * Ellers bliver cache opdateret hvis cache er forældet
+     * Tilsidst kan en opdatering skyldes at der ikke er noget gemt i cache og derfor må hente cache først
+     *
+     */
     public ArrayList<User> getUsers(Boolean forceUpdate) {
 
-        /**
-         * Først bliver der tjekket om der skal forceUpdate, dette kan gøres når man vil gemmemtvinge en update af cache
-         * Ellers bliver cache opdateret hvis cache er forældet
-         * Tilsidst kan en opdatering skyldes at der ikke er noget gemt i cache og derfor må hente cache først
-         */
         if (forceUpdate
                 || ((this.created + this.ttl) <= (System.currentTimeMillis() / 1000L ))
                 || this.users == null) {
