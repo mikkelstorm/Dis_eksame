@@ -8,6 +8,10 @@ import utils.Config;
 import utils.Hashing;
 import utils.Log;
 
+/**
+ * Klassen UserController har til formål at håndtere alle metoder med brugeren. Dette er metoder
+ * som at hente data på en bruger fra databasen, oprette en ny bruger i databasen, login, slette og opdatere en bruger
+ */
 public class UserController {
 
   private static DatabaseController dbCon;
@@ -16,6 +20,11 @@ public class UserController {
     dbCon = new DatabaseController();
   }
 
+  /**
+   * Metode der henter en specifik bruger på baggrund af brugerens ID i databasen.
+   * @param id UserID i databasen
+   * @return bruger
+   */
   public static User getUser(int id) {
 
     // Check for connection
@@ -96,38 +105,42 @@ public class UserController {
   }
 
   /**
-   *
-   * @param user
-   * @return
+   *Opretter en bruger i databasen
+   * @param user data fra post call
+   * @return brugeren
    */
   public static User createUser(User user) {
 
-    // Write in log that we've reach this step
+    //Skriver i loggen, man er noget til denne metode
     Log.writeLog(UserController.class.getName(), user, "Actually creating a user in DB", 0);
 
-    // Set creation time for user.
+    //Sætter tiden for hvornår brugeren er oprettet
     user.setCreatedTime(System.currentTimeMillis() / 1000L);
 
-    // Check for DB Connection
+    //Tjekker om der er forbindelse til databasen
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
     //TODO: tjek om der findes flere med den email?     :FIX - egen todo
+    //SQL statement der henter en bruger på baggrund af deres email.
     String sql = "SELECT * FROM user WHERE email=\'" + user.getEmail() + "\'";
     ResultSet rs = dbCon.query(sql);
-    Boolean chack = false;
+    Boolean check = false;
 
+    //prøver at tjekke om der findes en bruger med denne email i databasen.
+    //Dette gøres for at sikre at der ikke er flere med samme email, da flere metode er bygget på at finde en email
+    //og hvis der er flere med samme email, så ændrer man måske den forkerte bruger
     try {
       // tager kun en user, da der ikke er flere brugere med samme email og kode
       if (rs.next()) {
 
-        chack = true;
+        check = true;
         System.out.println("Brugeren findes i databasen");
         return null;
 
       } else {
-        chack = false;
+        check = false;
         System.out.println("Brugeren findes ikke i databasen");
       }
     } catch (SQLException ex) {
@@ -139,7 +152,7 @@ public class UserController {
     //Hashing af password sker ved at gemme password igennem metoden hashWithSaltMd5WithTimestamp
     //Dette gør at koden bliver gemt ved at køre stingen "password" + "tiden når oprettelsen sker" og hasher det
     //saltet vil være created_time
-    if(!chack) {
+    if(!check) {
       int userID = dbCon.insert(
               "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
                       + user.getFirstname()
@@ -168,15 +181,14 @@ public class UserController {
 
 
   /**
-   *
+   *Metoden LoginUser gør at hvis en bruger logger ind med en rigtigt kode og email, så får brugeren returneret en token
    * @param user
    * @return
    */
   public static User loginUser(User user){
 
-    User tempuser = user;
+    User tempUser = user;
 
-    String userPassword = user.getPassword();
     // Skriver i log at vi er noget til dette step
     Log.writeLog(UserController.class.getName(), user, "Login as an user", 0);
 
@@ -211,11 +223,11 @@ public class UserController {
       System.out.println(ex.getMessage());
     }
 
-    if(user.getPassword().equals(new Hashing().HashWithSaltMd5WithTimestamp(tempuser.getPassword(), user.getCreatedTime()))){
+    if(user.getPassword().equals(new Hashing().HashWithSaltMd5WithTimestamp(tempUser.getPassword(), user.getCreatedTime()))){
       //tilknytter en token til brugeren på baggrund af en fælles token (payload) og privat token (verify signature)
       user.setToken(new Hashing().sha(Config.getTokenSalt())
               + "." + new Hashing().sha(Integer.toString(user.getId())));
-      user.setPassword(tempuser.getPassword());
+      user.setPassword(tempUser.getPassword());
       // returnere fundet bruger med valid password
       return user;
     }else{
@@ -226,7 +238,11 @@ public class UserController {
 
   }
 
-
+  /**
+   * Metoden DeleteUser sletter en bruger, hvis både email og token matcher
+   * @param user
+   * @return
+   */
   public static User deleteUser(User user){
 
     // Skriver i log at vi er nået til dette step
@@ -280,7 +296,11 @@ public class UserController {
     }
   }
 
-
+  /**
+   * UpdateUser metoden opdatere en brugers navn, kode(som resultere i nyt token) og email
+   * @param user
+   * @return brugers nye informationer
+   */
   public static User UpdateUser(User user){
 
     // Skriver i log at vi er noget til dette step

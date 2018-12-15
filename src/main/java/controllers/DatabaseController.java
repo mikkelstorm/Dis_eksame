@@ -8,6 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import utils.Config;
 
+/**
+ * Klassen DatabaseController har til formål at etablere en forbindelse med databasen
+ */
 public class DatabaseController {
 
   private static Connection connection;
@@ -81,6 +84,11 @@ public class DatabaseController {
     return rs;
   }
 
+  /**
+   * Metoden tager et sql statement fra en controller metode og kører statementet i databasen
+   * @param sql statement fra en controller metode
+   * @return  resultatet
+   */
   public int insert(String sql) {
 
     // Set key to 0 as a start

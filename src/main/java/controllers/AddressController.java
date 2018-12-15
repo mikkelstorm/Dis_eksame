@@ -5,6 +5,9 @@ import java.sql.SQLException;
 import model.Address;
 import utils.Log;
 
+/**
+ * AdresseControlleren har alle metoderne der har til formål enten at hente adresser eller oprette addresser
+ */
 public class AddressController {
 
   private static DatabaseController dbCon;
@@ -13,6 +16,11 @@ public class AddressController {
     dbCon = new DatabaseController();
   }
 
+  /**
+   * Metoden getAddress henter adressen med en bestemt id
+   * @param id
+   * @return adresse
+   */
   public static Address getAddress(int id) {
 
     // Check for DB Connection
@@ -51,6 +59,11 @@ public class AddressController {
     return address;
   }
 
+  /**
+   * metoden createAddress laver en adresse
+   * @param address
+   * @return null, hvis addresse ikke er blevet gemt og ellers returneret den addressen
+   */
   public static Address createAddress(Address address) {
 
     // Write in log that we've reach this step

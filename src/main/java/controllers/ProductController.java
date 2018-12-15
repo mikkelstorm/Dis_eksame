@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import model.Product;
 import utils.Log;
 
+/**
+ * Klassen ProductController har til formål at hente produkter, gemmer produkter og opretter produkter
+ */
 public class ProductController {
 
   private static DatabaseController dbCon;
@@ -14,6 +17,11 @@ public class ProductController {
     dbCon = new DatabaseController();
   }
 
+  /**
+   * Henter et produkt med specifikt id i databasen
+   * @param id id på produkt i database
+   * @return produkt
+   */
   public static Product getProduct(int id) {
 
     // check for connection
@@ -125,6 +133,11 @@ public class ProductController {
     return products;
   }
 
+  /**
+   * Opretter et produkt i databasen
+   * @param product body i post call
+   * @return produktet
+   */
   public static Product createProduct(Product product) {
 
     // Write in log that we've reach this step

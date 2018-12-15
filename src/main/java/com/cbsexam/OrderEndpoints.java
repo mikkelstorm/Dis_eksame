@@ -12,7 +12,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import model.Order;
-import utils.Encryption;
 
 @Path("order")
 public class OrderEndpoints {
@@ -72,7 +71,7 @@ public class OrderEndpoints {
     Order newOrder = new Gson().fromJson(body, Order.class);
 
     // Use the controller to add the user
-    Order createdOrder = OrderController.createOrderTest(newOrder);
+    Order createdOrder = OrderController.createOrder(newOrder);
 
     // Get the user back with the added ID and return it to the user
     String json = new Gson().toJson(createdOrder);

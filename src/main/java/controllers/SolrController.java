@@ -9,6 +9,9 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import utils.Config;
 
+/**
+ * Håndtere SolrControlleren, som har til formål at oprette forbindelse til Solr og søge i Solr databasen
+ */
 public final class SolrController {
 
   private static HttpSolrClient connection;

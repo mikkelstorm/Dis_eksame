@@ -7,6 +7,9 @@ import model.LineItem;
 import model.Product;
 import utils.Log;
 
+/**
+ * Klassen LineItemController til formål at lave en indkøbskurv af produkter
+ */
 public class LineItemController {
 
   private static DatabaseController dbCon;
@@ -15,6 +18,11 @@ public class LineItemController {
     dbCon = new DatabaseController();
   }
 
+  /**
+   * Henter getLineItemsForOrder som henter en indkøbskurv
+   * @param orderID
+   * @return
+   */
   public static ArrayList<LineItem> getLineItemsForOrder(int orderID) {
 
     // Check for DB Connection
@@ -56,6 +64,12 @@ public class LineItemController {
     return items;
   }
 
+  /**
+   * metoden createLineItem gemmer en indkøbskurv
+   * @param lineItem
+   * @param orderID
+   * @return
+   */
   public static LineItem createLineItem(LineItem lineItem, int orderID) {
 
     // Write in log that we've reach this step
