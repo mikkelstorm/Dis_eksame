@@ -1,9 +1,7 @@
 package cache;
 
 import controllers.OrderController;
-import controllers.ProductController;
 import model.Order;
-import model.Product;
 import utils.Config;
 
 import java.util.ArrayList;
@@ -38,6 +36,7 @@ public class OrderCache {
      * Metoden getOrders tjekker først om der skal forceUpdate, dette kan gøres når man vil gemmemtvinge
      * en update af cache. Ellers bliver cache opdateret hvis cache er forældet
      * Tilsidst kan en opdatering skyldes at der ikke er noget gemt i cache og derfor må hente cache først
+     *
      * @param forceUpdate
      * @return returnere cache med en liste af ordrer
      */
