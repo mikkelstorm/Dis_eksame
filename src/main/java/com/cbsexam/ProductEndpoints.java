@@ -50,9 +50,9 @@ public class ProductEndpoints {
         //Der er en fejl ved at man ikke kan have til i krypteringskoden. Jeg havde løst dette problem ved at man skulle
         //skrive et "?" og så ville den gemme alle tal efter. Eksemplet er skrevet nedeunder. Men dette er måden
         //postman normalt gør tingene på og kunne derfor ikke sende det som en del af URL'en. Den ville kun sende alt før "?"
-//        if (c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7' || c == '8' || c == '9' || c == '0' && !tjek) {tal = tal + c;}
-//        if(tjek) {key = key + c;}
-//        if (c == '?') {tjek = true;}
+        //if (c == '1' || c == '2' || c == '3' || c == '4' || c == '5' || c == '6' || c == '7' || c == '8' || c == '9' || c == '0' && !tjek) {tal = tal + c;}
+        //if(tjek) {key = key + c;}
+        //if (c == '?') {tjek = true;}
 
 
         //laver Strengen tal om til en int, da databasen skal bruge en int

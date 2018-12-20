@@ -9,14 +9,14 @@ public final class Encryption {
 
             // The key is predefined and hidden in code
             // TODO: Create a more complex code and store it somewhere better     :FIX
-//      char[] key = {'C', 'B', 'S'};
+            //gemmer krypteringskoden fra config filen i et char array for hvert bogstav.
             char[] key = Config.getEncryptionCode().toCharArray();
 
 
             // Stringbuilder enables you to play around with strings and make useful stuff
             StringBuilder thisIsEncrypted = new StringBuilder();
 
-            // TODO: This is where the magic of XOR is happening. Are you able to explain what is going on?  :FIX måske/gæt
+            // TODO: This is where the magic of XOR is happening. Are you able to explain what is going on?  :FIX
             /**
              * Denne XOR bliver lavet i en "for loop", hvor dens antal loops er bestemt af hvor langt kodeordet er.
              * thisIsEncryption er en indbygget java klasse kaldet "StringBuilder", som bliver benytter til at lave og modifisere en streng.
@@ -33,6 +33,8 @@ public final class Encryption {
              * rawString.charAt( b ) ^ 0
              * rawString.charAt( b )
              * thisIsEncrypted.append( b )
+             *
+             * dette vil tilsidst efter at have appended, antallet af bogstaver i rawString-length til en string kaldet thisIsEncrypted.
              */
 
             for (int i = 0; i < rawString.length(); i++) {
